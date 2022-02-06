@@ -1,5 +1,7 @@
 import React from "react";
 import { useGlobalContext } from "../../context/context";
+import Loader from "../Loader";
+import Notification from "../Notification";
 
 const FormLayout = () => {
   const {
@@ -9,6 +11,9 @@ const FormLayout = () => {
     bodyInput,
     postFormData,
     isAlert,
+    loading,
+    notification,
+    avatar,
   } = useGlobalContext();
 
   const submitHandler = (e) => {
@@ -23,7 +28,9 @@ const FormLayout = () => {
       }}
     >
       <div className="avatar">
-        <div className="circle"></div>
+        <div className="circle">
+          <h1>{avatar}</h1>
+        </div>
       </div>
       <div className="common">
         <label htmlFor="title">
@@ -59,6 +66,8 @@ const FormLayout = () => {
         ></textarea>
       </div>
       <button type="submit">Submit</button>
+      {loading && <Loader />}
+      {notification.status && <Notification />}
     </form>
   );
 };
