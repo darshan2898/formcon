@@ -1,23 +1,29 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
+//CONTEXT CREATION
 const AppContext = createContext();
 
+//JSON USERS API
 const url = "https://jsonplaceholder.typicode.com/users";
 
 export const AppProvider = ({ children }) => {
+  //USERS
   const [users, setUsers] = useState("");
   const [usersList, setUsersList] = useState([]);
   const [isId, setIsId] = useState("");
+  //MAPS
   const [mapStatus, setMapStatus] = useState(true);
-
+  const [isAddress, setAddress] = useState("");
+  //FORM
   const [titleInput, setTitleInput] = useState("");
   const [bodyInput, setBodyInput] = useState("");
+  //NOTIFIERS
   const [isAlert, setIsAlert] = useState({ status: false, msg: "" });
   const [loading, setLoading] = useState("");
   const [notification, setNotification] = useState({ status: false, msg: "" });
-
   const [avatar, setAvatar] = useState("");
 
+  // GETTING USERS LIST FROM API
   const getUsersList = async () => {
     try {
       const response = await fetch(url);
@@ -28,6 +34,7 @@ export const AppProvider = ({ children }) => {
     }
   };
 
+  //GETTING PARTICULAR USERS ADdRESS
   const getUserData = async () => {
     if (isId) {
       setIsAlert({ status: false });
@@ -37,7 +44,8 @@ export const AppProvider = ({ children }) => {
         );
         const result = await response.json();
         const { id, address } = result;
-        console.log(address);
+        //SETTING ADDRESS
+        setAddress(address);
       } catch (error) {
         console.log(error);
       }
@@ -46,6 +54,7 @@ export const AppProvider = ({ children }) => {
     }
   };
 
+  //SETTING UP AVATAR
   const setUpAvatar = () => {
     if (isId) {
       setAvatar(isId);
@@ -61,10 +70,12 @@ export const AppProvider = ({ children }) => {
     getUsersList();
   }, []);
 
+  // MAP LAYOUT HANDLERS
   const handleMapLayout = (status) => {
     if (users) {
       setMapStatus(status);
     } else {
+      // ALERT FOR NOT SELECTION : USER
       setIsAlert({
         status: true,
         msg: "please select any user",
@@ -72,10 +83,14 @@ export const AppProvider = ({ children }) => {
     }
   };
 
+  // POSTING FORM DATA ON SUBMIT
   const postFormData = () => {
+    // FORM VALIDATIONS
     if (titleInput && bodyInput) {
+      // TITLE LENGTH MORE THAN 2 CHARS
       if (titleInput.length >= 3) {
         const newData = { userId: isId, title: titleInput, body: bodyInput };
+        // DATA POSTING TO JSON API
         const postData = async () => {
           setLoading(true);
           const response = await fetch(
@@ -89,6 +104,7 @@ export const AppProvider = ({ children }) => {
             }
           );
           const result = await response.json();
+          // LOADING BEHAVIOR
           setLoading(false);
           if (result.userId) {
             setNotification({ status: true, msg: "Data Added SuccessFully." });
@@ -118,6 +134,7 @@ export const AppProvider = ({ children }) => {
     }
   };
 
+  //PASSED VALUES
   return (
     <AppContext.Provider
       value={{
@@ -139,6 +156,7 @@ export const AppProvider = ({ children }) => {
         notification,
         setNotification,
         avatar,
+        isAddress,
       }}
     >
       {children}
